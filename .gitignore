@@ -1,0 +1,17 @@
+# Environment variables
+.env
+
+# Composer dependencies
+/vendor/
+composer.lock
+
+# IDE files
+.idea/
+.vscode/
+
+# PHP error logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
