@@ -1,9 +1,17 @@
 {
+  "name": "ai/audio-speaker",
+  "description": "OpenAI Text-to-Speech Generator",
+  "type": "project",
   "require": {
-    "php": "^8.1",
+    "php": "^8.0",
     "openai-php/client": "^0.8.0",
-    "vlucas/phpdotenv": "^5.6",
-    "guzzlehttp/guzzle": "^7.8"
+    "guzzlehttp/guzzle": "^7.8",
+    "vlucas/phpdotenv": "^5.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
   },
   "config": {
     "allow-plugins": {

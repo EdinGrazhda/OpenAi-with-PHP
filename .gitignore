@@ -1,17 +1,30 @@
-# Environment variables
+# Environment files
 .env
+.env.backup
+.env.production
 
 # Composer dependencies
-/vendor/
-composer.lock
+/vendor
+composer.phar
 
-# IDE files
-.idea/
-.vscode/
+# Generated audio files
+/audio/*
+!/audio/.gitkeep
 
-# PHP error logs
-*.log
+# IDE specific files
+.idea
+.vscode
+*.sublime-workspace
+*.sublime-project
 
-# OS generated files
+# System Files
 .DS_Store
 Thumbs.db
+
+# Logs
+*.log
+php_error.log
+error.log
+
+# Cache files
+*.cache
