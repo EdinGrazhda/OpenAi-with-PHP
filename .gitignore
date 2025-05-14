@@ -1,0 +1,30 @@
+# Environment files
+.env
+.env.backup
+.env.production
+
+# Composer dependencies
+/vendor
+composer.phar
+
+# IDE specific files
+.idea
+.vscode
+*.sublime-workspace
+*.sublime-project
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+php_error.log
+error.log
+
+# Cache files
+*.cache
+
+# Generated images (if you're storing them locally)
+/images/*
+!/images/.gitkeep
