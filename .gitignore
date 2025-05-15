@@ -1,0 +1,25 @@
+# Environment files
+.env
+
+# Composer
+/vendor/
+composer.lock
+
+# Uploaded files
+/uploads/*
+!/uploads/.gitkeep
+
+# IDE specific files
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

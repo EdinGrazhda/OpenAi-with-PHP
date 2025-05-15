@@ -1,0 +1,31 @@
+{
+  "name": "php-ai/file-input",
+  "description": "File Input handler with OpenAI integration",
+  "type": "project",
+  "require": {
+    "php": "^8.1",
+    "ext-iconv": "*",
+    "ext-mbstring": "*",
+    "guzzlehttp/guzzle": "^7.8",
+    "openai-php/client": "^v0.8.0",
+    "php-http/discovery": "^1.19",
+    "phpoffice/phpword": "1.1",
+    "vlucas/phpdotenv": "^5.5"
+  },
+  "authors": [
+    {
+      "name": "AI Developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "PhpAi\\FileInput\\": "src/"
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "php-http/discovery": true
+    }
+  }
+}
