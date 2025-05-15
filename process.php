@@ -11,6 +11,7 @@ if (!extension_loaded('iconv')) {
 
 use OpenAI\Client;
 use Dotenv\Dotenv;
+use Smalot\PdfParser\Parser;
 
 // Load environment variables
 $dotenv = Dotenv::createImmutable(__DIR__);
@@ -104,14 +105,17 @@ try {
         case 'txt':
             $fileContent = file_get_contents($uploadPath);
             break;
-            
-        case 'pdf':
-            if (extension_loaded('pdfparser')) {
-                $parser = new \Smalot\PdfParser\Parser();
+              case 'pdf':
+            try {
+                $parser = new Parser();
                 $pdf = $parser->parseFile($uploadPath);
                 $fileContent = $pdf->getText();
-            } else {
-                handleError('PDF parsing requires the pdfparser extension.');
+                
+                if (empty(trim($fileContent))) {
+                    throw new Exception('No readable text found in PDF');
+                }
+            } catch (Exception $e) {
+                handleError('Failed to parse PDF: ' . $e->getMessage());
             }
             break;
             
