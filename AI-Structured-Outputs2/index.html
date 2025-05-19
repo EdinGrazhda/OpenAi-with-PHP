@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Structured Output Generator</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        color: #1f2937;
+        line-height: 1.5;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      .header {
+        text-align: center;
+        padding: 2rem 0;
+        color: white;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+      }
+
+      .header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+      }
+
+      .input-group {
+        margin-bottom: 1.5rem;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #374151;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 150px;
+        padding: 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        transition: border-color 0.2s ease;
+        resize: vertical;
+      }
+
+      textarea:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      }
+
+      .controls {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      select {
+        flex: 1;
+        min-width: 200px;
+        padding: 0.75rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        background-color: white;
+        cursor: pointer;
+      }
+
+      select:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      }
+
+      button {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+      }
+
+      button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+
+      .output {
+        background: #f9fafb;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        overflow-x: auto;
+      }
+
+      .output pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        font-family: "Menlo", "Monaco", "Courier New", monospace;
+        font-size: 0.875rem;
+      }
+
+      .output.html-output {
+        background: white;
+        padding: 0;
+      }
+
+      .loader {
+        display: none;
+        width: 48px;
+        height: 48px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #6366f1;
+        border-radius: 50%;
+        margin: 2rem auto;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .error-message {
+        color: #dc2626;
+        background-color: #fef2f2;
+        border: 1px solid #fee2e2;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-top: 1rem;
+        display: none;
+      }
+
+      @media (max-width: 640px) {
+        .container {
+          padding: 1rem;
+        }
+
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .card {
+          padding: 1.5rem;
+        }
+
+        .controls {
+          flex-direction: column;
+        }
+
+        select {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1>AI Structured Output Generator</h1>
+        <p>Transform your text into structured formats with AI</p>
+      </header>
+
+      <main>
+        <div class="card">
+          <form id="outputForm">
+            <div class="input-group">
+              <label for="prompt">Your Input</label>
+              <textarea
+                id="prompt"
+                name="prompt"
+                placeholder="Enter your text here..."
+                required
+              ></textarea>
+            </div>
+
+            <div class="controls">
+              <select id="outputType" name="outputType" required>
+                <option value="json">JSON</option>
+                <option value="xml">XML</option>
+                <option value="yaml">YAML</option>
+                <option value="html">HTML</option>
+              </select>
+            </div>
+
+            <button type="submit">Generate Structured Output</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2 style="margin-bottom: 1rem; font-size: 1.5rem; color: #374151">
+            Generated Output
+          </h2>
+          <div id="loader" class="loader"></div>
+          <div id="error" class="error-message"></div>
+          <div id="output" class="output">
+            <pre><code>Output will appear here...</code></pre>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const form = document.getElementById("outputForm");
+      const promptInput = document.getElementById("prompt");
+      const outputDiv = document.getElementById("output");
+      const loader = document.getElementById("loader");
+      const errorDiv = document.getElementById("error");
+      const outputTypeSelect = document.getElementById("outputType");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const prompt = promptInput.value.trim();
+        const outputType = outputTypeSelect.value;
+
+        if (!prompt) {
+          errorDiv.textContent = "Please enter some text";
+          errorDiv.style.display = "block";
+          return;
+        }
+
+        // Reset UI
+        errorDiv.style.display = "none";
+        outputDiv.style.display = "none";
+        loader.style.display = "block";
+        form.querySelector("button").disabled = true;
+
+        try {
+          const response = await fetch("process.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              prompt: prompt,
+              outputType: outputType,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const contentType = response.headers.get("content-type");
+          if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("Server did not return JSON!");
+          }
+
+          const data = await response.json();
+
+          if (data.success) {
+            // Update output class based on format
+            outputDiv.className =
+              data.format === "html" ? "output html-output" : "output";
+
+            // Update content based on format
+            if (data.format === "html") {
+              outputDiv.innerHTML = data.result;
+            } else {
+              outputDiv.innerHTML = `<pre><code>${data.result}</code></pre>`;
+            }
+          } else {
+            throw new Error(data.error || "An error occurred");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          errorDiv.textContent = error.message;
+          errorDiv.style.display = "block";
+        } finally {
+          loader.style.display = "none";
+          outputDiv.style.display = "block";
+          form.querySelector("button").disabled = false;
+        }
+      });
+
+      // Update output div class when output type changes
+      outputTypeSelect.addEventListener("change", () => {
+        outputDiv.className =
+          outputTypeSelect.value === "html" ? "output html-output" : "output";
+        if (outputDiv.querySelector("pre code")) {
+          outputDiv.innerHTML =
+            "<pre><code>Output will appear here...</code></pre>";
+        }
+      });
+    </script>
+  </body>
+</html>

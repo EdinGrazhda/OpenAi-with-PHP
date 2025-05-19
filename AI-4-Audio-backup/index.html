@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Text to Speech</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        width: 100%;
+        max-width: 800px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 2.5rem;
+      }
+
+      .input-group {
+        margin-bottom: 1.5rem;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #555;
+        font-weight: 500;
+      }
+
+      textarea {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        min-height: 150px;
+        resize: vertical;
+        margin-bottom: 1rem;
+        transition: border-color 0.3s ease;
+      }
+
+      textarea:focus {
+        outline: none;
+        border-color: #00b4db;
+      }
+
+      .controls {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      select {
+        padding: 0.5rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        background: white;
+        flex: 1;
+      }
+
+      select:focus {
+        outline: none;
+        border-color: #00b4db;
+      }
+
+      button {
+        background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 500;
+        width: 100%;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 179, 219, 0.4);
+      }
+
+      button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+
+      .audio-player {
+        margin-top: 2rem;
+        width: 100%;
+        display: none;
+      }
+
+      .audio-player audio {
+        width: 100%;
+      }
+
+      .loader {
+        display: none;
+        width: 48px;
+        height: 48px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #00b4db;
+        border-radius: 50%;
+        margin: 2rem auto;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .error-message {
+        color: #dc3545;
+        text-align: center;
+        margin-top: 1rem;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>AI Text to Speech</h1>
+
+      <div class="input-group">
+        <label for="text">Enter your text</label>
+        <textarea
+          id="text"
+          placeholder="Type or paste your text here..."
+        ></textarea>
+      </div>
+
+      <div class="controls">
+        <select id="voice">
+          <option value="alloy">Alloy (Neutral)</option>
+          <option value="echo">Echo (Male)</option>
+          <option value="fable">Fable (Male)</option>
+          <option value="onyx">Onyx (Male)</option>
+          <option value="nova">Nova (Female)</option>
+          <option value="shimmer">Shimmer (Female)</option>
+        </select>
+
+        <select id="model">
+          <option value="tts-1">Standard Quality</option>
+          <option value="tts-1-hd">HD Quality</option>
+        </select>
+      </div>
+
+      <button id="generate">Generate Speech</button>
+
+      <div id="loader" class="loader"></div>
+
+      <div id="audio-player" class="audio-player">
+        <audio controls>Your browser does not support the audio element.</audio>
+      </div>
+
+      <div id="error" class="error-message"></div>
+    </div>
+
+    <script>
+      const text = document.getElementById("text");
+      const voice = document.getElementById("voice");
+      const model = document.getElementById("model");
+      const generateBtn = document.getElementById("generate");
+      const loader = document.getElementById("loader");
+      const audioPlayer = document.getElementById("audio-player");
+      const audio = audioPlayer.querySelector("audio");
+      const errorMessage = document.getElementById("error");
+
+      generateBtn.addEventListener("click", async () => {
+        if (!text.value.trim()) {
+          showError("Please enter some text");
+          return;
+        }
+
+        // Reset UI
+        generateBtn.disabled = true;
+        loader.style.display = "block";
+        audioPlayer.style.display = "none";
+        errorMessage.style.display = "none";
+
+        try {
+          const response = await fetch("generate-speech.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              text: text.value,
+              voice: voice.value,
+              model: model.value,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (!data.success) {
+            throw new Error(data.error || "Failed to generate speech");
+          }
+
+          // Update audio player
+          audio.src = data.audio_url;
+          audioPlayer.style.display = "block";
+          audio.play();
+        } catch (error) {
+          showError(error.message);
+        } finally {
+          generateBtn.disabled = false;
+          loader.style.display = "none";
+        }
+      });
+
+      function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.style.display = "block";
+      }
+    </script>
+  </body>
+</html>
